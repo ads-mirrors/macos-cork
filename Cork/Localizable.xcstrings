@@ -14655,6 +14655,26 @@
         }
       }
     },
+    "onboarding.socials.subtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you want to stay up-to-date with the development of Cork, consider following these accounts"
+          }
+        }
+      }
+    },
+    "onboarding.socials.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stay Informed"
+          }
+        }
+      }
+    },
     "onboarding.start" : {
       "localizations" : {
         "cs" : {
