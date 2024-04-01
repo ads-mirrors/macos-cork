@@ -324,9 +324,6 @@ struct ContentView: View, Sendable
                 await loadTopPackages()
             }
         })
-        .onChange(of: sortTopPackagesBy, perform: { _ in
-            sortTopPackages()
-        })
         .onChange(of: customHomebrewPath, perform: { _ in
             restartApp()
         })
@@ -613,16 +610,27 @@ struct ContentView: View, Sendable
         {
             appState.isLoadingTopPackages = true
 
-            async let topFormulae: [TopPackage] = try await loadUpTopPackages(numberOfDays: discoverabilityDaySpan.rawValue, isCask: false, appState: appState)
-            async let topCasks: [TopPackage] = try await loadUpTopPackages(numberOfDays: discoverabilityDaySpan.rawValue, isCask: true, appState: appState)
+            async let topFormulae: Set<TopPackage> = try await loadUpTopPackages(numberOfDays: discoverabilityDaySpan.rawValue, isCask: false, appState: appState)
+            async let topCasks: Set<TopPackage> = try await loadUpTopPackages(numberOfDays: discoverabilityDaySpan.rawValue, isCask: true, appState: appState)
+            
+            let topFormulaeWithoutAlreadyInstalledPackages: Set<TopPackage> = await filterOutInstalledPackagesFromTopPackageTracker(topPackageTracker: try topFormulae, packageType: .formula)
+            let topCasksWithoutAlreadyInstalledPackages: Set<TopPackage> = await filterOutInstalledPackagesFromTopPackageTracker(topPackageTracker: try topCasks, packageType: .cask)
+            
+            let topFormulaeSorted: [TopPackage] = topFormulaeWithoutAlreadyInstalledPackages.sorted{ $0.packageDownloads > $1.packageDownloads }
+            let topCasksSorted: [TopPackage] = topCasksWithoutAlreadyInstalledPackages.sorted{ $0.packageDownloads > $1.packageDownloads }
+            
+            let bottomTopFormulaeSorted: [TopPackage] = try await topFormulae.sorted{ $0.packageDownloads < $1.packageDownloads }
+            let bottomTopCasksSorted: [TopPackage] = try await topCasks.sorted{ $0.packageDownloads < $1.packageDownloads }
 
-            topPackagesTracker.topFormulae = try await topFormulae
-            topPackagesTracker.topCasks = try await topCasks
+            topPackagesTracker.topFormulae = Array(topFormulaeSorted.prefix(15))
+            topPackagesTracker.topCasks = Array(topCasksSorted.prefix(15))
+            topPackagesTracker.bottomTopFormulae = Array(bottomTopFormulaeSorted.prefix(15))
+            topPackagesTracker.bottomTopCasks = Array(bottomTopCasksSorted.prefix(15))
 
-            AppConstants.logger.info("Packages in formulae tracker: \(topPackagesTracker.topFormulae.count)")
+            AppConstants.logger.info("Packages in formulae tracker: \(topPackagesTracker.topFormulae.map(\.packageName))")
             AppConstants.logger.info("Packages in cask tracker: \(topPackagesTracker.topCasks.count)")
-
-            sortTopPackages()
+            AppConstants.logger.info("Packages in bottom top formulae tracker: \(topPackagesTracker.bottomTopFormulae.count)")
+            AppConstants.logger.info("Packages in bottom top cask tracker: \(topPackagesTracker.bottomTopCasks.count)")
 
             appState.isLoadingTopPackages = false
         }
@@ -640,31 +648,17 @@ struct ContentView: View, Sendable
             }
         }
     }
-
-    private func sortTopPackages()
+    
+    /// topPackageTracker: Relevant tracker of top packages
+    /// installedPackageTracker: Relevant tracker of installed packages
+    func filterOutInstalledPackagesFromTopPackageTracker(topPackageTracker: Set<TopPackage>, packageType: PackageType) async -> Set<TopPackage>
     {
-        switch sortTopPackagesBy
-        {
-        case .mostDownloads:
-
-            AppConstants.logger.info("Will sort top packages by most downloads")
-
-            topPackagesTracker.topFormulae = topPackagesTracker.topFormulae.sorted(by: { $0.packageDownloads > $1.packageDownloads })
-            topPackagesTracker.topCasks = topPackagesTracker.topCasks.sorted(by: { $0.packageDownloads > $1.packageDownloads })
-
-        case .fewestDownloads:
-
-            AppConstants.logger.info("Will sort top packages by fewest downloads")
-
-            topPackagesTracker.topFormulae = topPackagesTracker.topFormulae.sorted(by: { $0.packageDownloads < $1.packageDownloads })
-            topPackagesTracker.topCasks = topPackagesTracker.topCasks.sorted(by: { $0.packageDownloads < $1.packageDownloads })
-
-        case .random:
-
-            AppConstants.logger.info("Will sort top packages randomly")
-
-            topPackagesTracker.topFormulae = topPackagesTracker.topFormulae.shuffled()
-            topPackagesTracker.topCasks = topPackagesTracker.topCasks.shuffled()
+        /// How this filter works: Take the names of installed packages and check if the top package is included. If it is, discard it.
+        switch packageType {
+            case .formula:
+                return topPackageTracker.filter{ !brewData.installedFormulae.map(\.name).contains($0.packageName) }
+            case .cask:
+                return topPackageTracker.filter{ !brewData.installedCasks.map(\.name).contains($0.packageName) }
         }
     }
 }

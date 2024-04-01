@@ -17,7 +17,7 @@ enum PackageParsingError: Error
     case couldNotParseHomebrewResponse
 }
 
-func loadUpTopPackages(numberOfDays: Int = 30, isCask: Bool, appState: AppState) async throws -> [TopPackage]
+func loadUpTopPackages(numberOfDays: Int = 30, isCask: Bool, appState: AppState) async throws -> Set<TopPackage>
 {
     
     var statsURL: URL?
@@ -76,7 +76,7 @@ func loadUpTopPackages(numberOfDays: Int = 30, isCask: Bool, appState: AppState)
     }
 }
 
-private func parseDownloadedTopPackageData(data: Data, isCask: Bool, numberOfDays: Int) async throws -> [TopPackage]
+private func parseDownloadedTopPackageData(data: Data, isCask: Bool, numberOfDays: Int) async throws -> Set<TopPackage>
 {
     /// The magic number here is the result of 1000/30, a base limit for 30 days: If the user selects the number of days to be 30, only show packages with more than 1000 downloads
     let packageDownloadsCutoff: Int = 33 * numberOfDays
@@ -85,7 +85,7 @@ private func parseDownloadedTopPackageData(data: Data, isCask: Bool, numberOfDay
     
     do
     {
-        var packageTracker: [TopPackage] = .init()
+        var packageTracker: Set<TopPackage> = .init()
         
         let parsedJSON: JSON = try await parseJSON(from: data)
         
@@ -108,7 +108,7 @@ private func parseDownloadedTopPackageData(data: Data, isCask: Bool, numberOfDay
             {
                 let packageName: String = packageInfo[packageInfoAccessor].stringValue
                 
-                packageTracker.append(TopPackage(packageName: packageName, packageDownloads: packageInstalledCount))
+                packageTracker.insert(TopPackage(packageName: packageName, packageDownloads: packageInstalledCount))
             }
             
         }

@@ -9,11 +9,38 @@ import SwiftUI
 
 struct TopPackagesSection: View
 {
+    @AppStorage("sortTopPackagesBy") var sortTopPackagesBy: TopPackageSorting = .mostDownloads
+    
     @EnvironmentObject var brewData: BrewDataStorage
-
-    let packageTracker: [TopPackage]
+    @EnvironmentObject var topPackageTracker: TopPackagesTracker
 
     let isCaskTracker: Bool
+    
+    var displayedTopPackages: [TopPackage]
+    {
+        if !isCaskTracker
+        {
+            switch sortTopPackagesBy {
+                case .mostDownloads:
+                    return topPackageTracker.topFormulae
+                case .fewestDownloads:
+                    return topPackageTracker.bottomTopFormulae
+                case .random:
+                    return (topPackageTracker.topFormulae + topPackageTracker.bottomTopFormulae).shuffled()
+            }
+        }
+        else
+        {
+            switch sortTopPackagesBy {
+                case .mostDownloads:
+                    return topPackageTracker.topCasks
+                case .fewestDownloads:
+                    return topPackageTracker.bottomTopCasks
+                case .random:
+                    return (topPackageTracker.topCasks + topPackageTracker.bottomTopCasks).shuffled()
+            }
+        }
+    }
 
     @State private var isCollapsed: Bool = false
 
@@ -23,7 +50,7 @@ struct TopPackagesSection: View
         {
             if !isCollapsed
             {
-                ForEach(packageTracker.filter
+                ForEach(displayedTopPackages.filter
                 {
                     if !isCaskTracker
                     {
@@ -33,10 +60,9 @@ struct TopPackagesSection: View
                     {
                         !brewData.installedCasks.map(\.name).contains($0.packageName)
                     }
-
-                }.prefix(15))
-                { topFormula in
-                    TopPackageListItem(topPackage: topFormula)
+                })
+                { topPackage in
+                    TopPackageListItem(topPackage: topPackage)
                 }
             }
         } header: {
