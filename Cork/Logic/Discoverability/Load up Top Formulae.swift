@@ -9,7 +9,7 @@ import Foundation
 
 extension TopPackagesTracker
 {
-    /// The internal struct allowing us to parse the top packages
+    /// The internal struct allowing us to parse the top formulae
     fileprivate struct TopFormulaeOutput: Codable
     {
         /// What we actually care about
@@ -29,6 +29,11 @@ extension TopPackagesTracker
     {
         /// Get how many days we have to load
         let numberOfDays: Int = UserDefaults.standard.integer(forKey: "discoverabilityDaySpan")
+        
+        /// The magic number here is the result of 1000/30, a base limit for 30 days: If the user selects the number of days to be 30, only show packages with more than 1000 downloads
+        let packageDownloadsCutoff: Int = 33 * numberOfDays
+        
+        AppConstants.logger.debug("Cutoff for formulae downloads: \(packageDownloadsCutoff, privacy: .public)")
         
         let decoder: JSONDecoder =
         {
@@ -50,10 +55,18 @@ extension TopPackagesTracker
                 
                 for topFormula in decodedData.items
                 {
-                    topFormulaeTempTracker.append(.init(
-                        packageName: topFormula.formula,
-                        packageDownloads: Int(topFormula.count) ?? 0)
-                    )
+                    if Int(topFormula.count)! > packageDownloadsCutoff
+                    {
+                        topFormulaeTempTracker.append(.init(
+                            packageName: topFormula.formula,
+                            packageDownloads: Int(topFormula.count) ?? 0)
+                        )
+                    }
+                    else
+                    {
+                        /// Discard any items that don't meet the download cutoff requirement
+                        break
+                    }
                 }
                 
                 self.topFormulae = topFormulaeTempTracker
