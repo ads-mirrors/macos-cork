@@ -25,11 +25,8 @@ extension TopPackagesTracker
         let items: [TopCaskItem]
     }
     
-    func loadTopCasks() async throws
-    {
-        /// Get how many days we have to load
-        let numberOfDays: Int = UserDefaults.standard.integer(forKey: "discoverabilityDaySpan")
-        
+    func loadTopCasks(numberOfDays: Int) async throws
+    {        
         /// The magic number here is the result of 1000/30, a base limit for 30 days: If the user selects the number of days to be 30, only show packages with more than 1000 downloads
         let packageDownloadsCutoff: Int = 33 * numberOfDays
         
@@ -55,11 +52,13 @@ extension TopPackagesTracker
                 
                 for topCask in decodedData.items
                 {
-                    if Int(topCask.count)! > packageDownloadsCutoff
+                    let formattedDownloadsNumber: Int = Int(topCask.count.replacingOccurrences(of: ",", with: ""))!
+                    
+                    if formattedDownloadsNumber > packageDownloadsCutoff
                     {
                         topCasksTempTracker.append(.init(
                             packageName: topCask.cask,
-                            packageDownloads: Int(topCask.count) ?? 0)
+                            packageDownloads: formattedDownloadsNumber)
                         )
                     }
                     else
@@ -69,11 +68,11 @@ extension TopPackagesTracker
                     }
                 }
                 
-                self.topFormulae = topCasksTempTracker
+                self.topCasks = topCasksTempTracker
             }
             catch let parsingError
             {
-                AppConstants.logger.error("Failed while parsing top casks: \(parsingError)")
+                AppConstants.logger.error("Failed while parsing top casks: \(parsingError)\n\(parsingError.localizedDescription)")
             }
         }
         catch let dataLoadingError as DataDownloadingError

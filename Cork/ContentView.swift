@@ -593,11 +593,8 @@ struct ContentView: View, Sendable
         {
             appState.isLoadingTopPackages = true
 
-            async let topFormulae: [TopPackage] = try await loadUpTopPackages(numberOfDays: discoverabilityDaySpan.rawValue, isCask: false, appState: appState)
-            async let topCasks: [TopPackage] = try await loadUpTopPackages(numberOfDays: discoverabilityDaySpan.rawValue, isCask: true, appState: appState)
-
-            topPackagesTracker.topFormulae = try await topFormulae
-            topPackagesTracker.topCasks = try await topCasks
+            try await topPackagesTracker.loadTopFormulae(numberOfDays: discoverabilityDaySpan.rawValue)
+            try await topPackagesTracker.loadTopCasks(numberOfDays: discoverabilityDaySpan.rawValue)
 
             AppConstants.logger.info("Packages in formulae tracker: \(topPackagesTracker.topFormulae.count)")
             AppConstants.logger.info("Packages in cask tracker: \(topPackagesTracker.topCasks.count)")

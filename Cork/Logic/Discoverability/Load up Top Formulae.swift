@@ -25,11 +25,8 @@ extension TopPackagesTracker
         let items: [TopFormulaItem]
     }
 
-    func loadTopFormulae() async throws
+    func loadTopFormulae(numberOfDays: Int) async throws
     {
-        /// Get how many days we have to load
-        let numberOfDays: Int = UserDefaults.standard.integer(forKey: "discoverabilityDaySpan")
-        
         /// The magic number here is the result of 1000/30, a base limit for 30 days: If the user selects the number of days to be 30, only show packages with more than 1000 downloads
         let packageDownloadsCutoff: Int = 33 * numberOfDays
         
@@ -55,11 +52,12 @@ extension TopPackagesTracker
                 
                 for topFormula in decodedData.items
                 {
-                    if Int(topFormula.count)! > packageDownloadsCutoff
+                    let formattedDownloadsNumber: Int = Int(topFormula.count.replacingOccurrences(of: ",", with: ""))!
+                    if formattedDownloadsNumber > packageDownloadsCutoff
                     {
                         topFormulaeTempTracker.append(.init(
                             packageName: topFormula.formula,
-                            packageDownloads: Int(topFormula.count) ?? 0)
+                            packageDownloads: formattedDownloadsNumber)
                         )
                     }
                     else
