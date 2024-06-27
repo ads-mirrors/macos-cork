@@ -4845,6 +4845,9 @@
         }
       }
     },
+    "action.show-terminal-output" : {
+
+    },
     "action.submit-feedback" : {
       "localizations" : {
         "cs" : {
@@ -6108,6 +6111,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "隱藏詳細訊息"
+          }
+        }
+      }
+    },
+    "add-package.install.installation-terminated.subheadline" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Homebrew terminated the installation of this package \nbefore it properly started.\nCheck below for the output of the installation command"
+          }
+        }
+      }
+    },
+    "add-package.install.installation-terminated.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Package installation terminated unexpextedly"
           }
         }
       }
