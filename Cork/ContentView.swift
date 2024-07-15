@@ -71,7 +71,7 @@ struct ContentView: View, Sendable
             {
                 Text("navigation.add-tap")
             } icon: {
-                Image(systemName: "spigot")
+                Image("tap.add")
             }
         }
         .help("navigation.add-tap.help")
@@ -87,7 +87,7 @@ struct ContentView: View, Sendable
             {
                 Text("navigation.install-package")
             } icon: {
-                Image(systemName: "plus")
+                Image("package.add")
             }
         }
         .help("navigation.install-package.help")
