@@ -6,7 +6,8 @@
 //
 
 import SwiftUI
-import UserNotifications
+@preconcurrency import UserNotifications
+import CorkShared
 
 @main
 struct CorkApp: App

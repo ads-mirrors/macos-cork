@@ -29,6 +29,7 @@ let project = Project(
                 "Cork/Logic/Helpers/Programs/Sudo Helper"
             ], dependencies: [
                 // .target(name: "CorkHelp"),
+                .target(name: "CorkShared"),
                 .external(name: "LaunchAtLogin"),
                 .external(name: "DavidFoundation")
             ], settings: .settings(configurations: [
@@ -39,6 +40,26 @@ let project = Project(
                 .release(
                     name: "Release",
                     xcconfig: .relativeToRoot("xcconfigs/Cork.xcconfig")
+                )
+            ])
+        ),
+        .target(
+            name: "CorkShared",
+            destinations: [.mac],
+            product: .staticLibrary,
+            bundleId: "com.davidbures.cork-shared",
+            infoPlist: .extendingDefault(with: [:]),
+            sources: [
+                "Shared/**/*.swift"
+            ],
+            settings: .settings(configurations: [
+                .debug(
+                    name: "Debug",
+                    xcconfig: .relativeToRoot("xcconfigs/CorkHelp.xcconfig")
+                ),
+                .release(
+                    name: "Release",
+                    xcconfig: .relativeToRoot("xcconfigs/CorkHelp.xcconfig")
                 )
             ])
         ),

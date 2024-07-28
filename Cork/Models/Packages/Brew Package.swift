@@ -7,6 +7,7 @@
 
 import Foundation
 import AppKit
+import CorkShared
 
 /// A representation of a Homebrew package
 struct BrewPackage: Identifiable, Equatable, Hashable

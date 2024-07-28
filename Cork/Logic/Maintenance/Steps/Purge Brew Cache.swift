@@ -6,11 +6,8 @@
 //
 
 import Foundation
+import CorkShared
 
-/*enum CachePurgeError: Error
-{
-    case standardErrorNotEmpty
-}*/
 
 func purgeBrewCache() async throws -> TerminalOutput
 {
