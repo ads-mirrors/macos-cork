@@ -108,6 +108,28 @@ let project = Project(
             ])
         ),
         .target(
+            name: "CorkIntents",
+            destinations: [.mac],
+            product: .staticLibrary,
+            bundleId: "com.davidbures.cork-intents",
+            sources: [
+                "Modules/Intents/**/*.swift"
+            ],
+            dependencies: [
+                .target(name: "CorkShared")
+            ],
+            settings: .settings(configurations: [
+                .debug(
+                    name: "Debug",
+                    xcconfig: .relativeToRoot("xcconfigs/Cork.xcconfig")
+                ),
+                .release(
+                    name: "Release",
+                    xcconfig: .relativeToRoot("xcconfigs/Cork.xcconfig")
+                )
+            ])
+        ),
+        .target(
             name: "CorkHelp",
             destinations: [.mac],
             product: .bundle,

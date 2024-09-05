@@ -6,10 +6,9 @@
 //
 
 import Foundation
-import CorkShared
 
 @MainActor
-func loadUpPackages(whatToLoad: PackageType, appState: AppState) async -> Set<BrewPackage>
+public func loadUpPackages(whatToLoad: PackageType, appState: AppState) async -> Set<BrewPackage>
 {
     AppConstants.logger.info("Started \(whatToLoad == .formula ? "Formula" : "Cask", privacy: .public) loading task at \(Date(), privacy: .public)")
 

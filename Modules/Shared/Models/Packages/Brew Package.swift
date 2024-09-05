@@ -8,15 +8,14 @@
 import AppKit
 import DavidFoundation
 import Foundation
-import CorkShared
 
 /// A representation of a Homebrew package
-struct BrewPackage: Identifiable, Equatable, Hashable
+public struct BrewPackage: Identifiable, Equatable, Hashable
 {
-    var id: UUID = .init()
-    let name: String
+    public var id: UUID = .init()
+    public let name: String
 
-    lazy var sanitizedName: String? = {
+    public lazy var sanitizedName: String? = {
         var packageNameWithoutTap: String
         { /// First, remove the tap name from the package name if it has it
             if self.name.contains("/")
@@ -53,40 +52,40 @@ struct BrewPackage: Identifiable, Equatable, Hashable
         }
     }()
 
-    let type: PackageType
-    var isTagged: Bool = false
+    public let type: PackageType
+    public var isTagged: Bool = false
 
-    let installedOn: Date?
-    let versions: [String]
+    public let installedOn: Date?
+    public let versions: [String]
 
-    var installedIntentionally: Bool = true
+    public var installedIntentionally: Bool = true
 
-    let sizeInBytes: Int64?
+    public let sizeInBytes: Int64?
 
-    var isBeingModified: Bool = false
+    public var isBeingModified: Bool = false
 
-    func getFormattedVersions() -> String
+    public func getFormattedVersions() -> String
     {
         return versions.formatted(.list(type: .and))
     }
 
-    mutating func changeTaggedStatus()
+    public mutating func changeTaggedStatus()
     {
         isTagged.toggle()
     }
 
-    mutating func changeBeingModifiedStatus()
+    public mutating func changeBeingModifiedStatus()
     {
         isBeingModified.toggle()
     }
 
-    mutating func purgeSanitizedName()
+    public mutating func purgeSanitizedName()
     {
         sanitizedName = nil
     }
 
     /// Open the location of this package in Finder
-    func revealInFinder() throws
+    public func revealInFinder() throws
     {
         enum FinderRevealError: LocalizedError
         {
@@ -130,7 +129,7 @@ struct BrewPackage: Identifiable, Equatable, Hashable
     }
 }
 
-extension FormatStyle where Self == Date.FormatStyle
+public extension FormatStyle where Self == Date.FormatStyle
 {
     static var packageInstallationStyle: Self
     {

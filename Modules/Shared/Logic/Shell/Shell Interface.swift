@@ -6,10 +6,9 @@
 //
 
 import Foundation
-import CorkShared
 
 @discardableResult
-func shell(
+public func shell(
     _ launchPath: URL,
     _ arguments: [String],
     environment: [String: String]? = nil,
@@ -46,7 +45,7 @@ func shell(
 ///        // Do something with `errorLine`
 ///    }
 /// }
-func shell(
+public func shell(
     _ launchPath: URL,
     _ arguments: [String],
     environment: [String: String]? = nil,
