@@ -46661,6 +46661,7 @@
       }
     },
     "settings.general.outdated-packages.display-amount.all" : {
+      "extractionState" : "stale",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -46719,6 +46720,7 @@
       }
     },
     "settings.general.outdated-packages.display-amount.none" : {
+      "extractionState" : "stale",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
@@ -46777,6 +46779,7 @@
       }
     },
     "settings.general.outdated-packages.display-amount.version-only" : {
+      "extractionState" : "stale",
       "localizations" : {
         "cs" : {
           "stringUnit" : {
