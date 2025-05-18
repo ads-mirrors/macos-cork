@@ -5582,6 +5582,9 @@
         }
       }
     },
+    "action.intents.get-installed-packages.short-title" : {
+
+    },
     "action.open-terminal" : {
       "localizations" : {
         "cs" : {
