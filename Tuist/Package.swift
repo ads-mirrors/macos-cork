@@ -27,6 +27,7 @@ let package = Package(
         .package(url: "https://github.com/buresdv/DavidFoundation", .upToNextMajor(from: "2.0.1")),
         .package(url: "https://github.com/Dean151/ButtonKit", .upToNextMajor(from: "0.6.1")),
         .package(url: "https://github.com/SimplyDanny/SwiftLintPlugins", .upToNextMajor(from: "0.56.1")),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", .upToNextMajor(from: .init(1, 9, 3)))
     ],
     targets: [
         .target(
