@@ -25,7 +25,7 @@ struct GetInstalledCasksIntent: AppIntent
         {
             let dummyBrewData: BrewPackagesTracker = await .init()
             
-            guard let installedCasks: BrewPackages = await dummyBrewData.loadInstalledPackages(packageTypeToLoad: .cask, appState: AppState()) else
+            guard let installedCasks: BrewPackages = await dummyBrewData.loadInstalledPackages(packageTypeToLoad: .cask) else
             {
                 throw IntentError.failedWhilePerformingIntent
             }

@@ -7,9 +7,10 @@
 
 import Foundation
 import SwiftUI
+import Dependencies
 
-@Observable @MainActor
-class BrewPackagesTracker
+@Observable
+final class BrewPackagesTracker: Sendable
 {
     var installedFormulae: BrewPackages = .init()
     var installedCasks: BrewPackages = .init()
@@ -89,6 +90,11 @@ class BrewPackagesTracker
             installedCasks.insert(.success(package))
         }
     }
+    
+    nonisolated init() {
+        self.installedFormulae = .init()
+        self.installedCasks = .init()
+    }
 }
 
 extension BrewPackagesTracker
@@ -116,4 +122,9 @@ extension BrewPackagesTracker
     {
         return self.numberOfInstalledFormulae + self.numberOfInstalledCasks
     }
+}
+
+extension BrewPackagesTracker: DependencyKey
+{
+    static let liveValue: BrewPackagesTracker = .init()
 }

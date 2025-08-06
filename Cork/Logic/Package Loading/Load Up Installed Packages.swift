@@ -7,6 +7,7 @@
 
 import CorkShared
 import Foundation
+import Dependencies
 
 /// A representation of the loaded ``BrewPackage``s
 /// Includes packages that were loaded properly, along those whose loading failed
@@ -21,9 +22,11 @@ extension BrewPackagesTracker
     ///   - appState: ``AppState`` used to display loading errors
     /// - Returns: A set of loaded ``BrewPackage``s for the specified ``PackageType``
     func loadInstalledPackages(
-        packageTypeToLoad: PackageType, appState: AppState
+        packageTypeToLoad: PackageType
     ) async -> BrewPackages?
     {
+        @Dependency(AppState.self) var appState: AppState
+        
         /// Start tracking when loading started
         let timeLoadingStarted: Date = .now
         AppConstants.shared.logger.debug(
@@ -47,23 +50,23 @@ extension BrewPackagesTracker
             {
             case .couldNotReadContentsOfParentFolder(let loadingError, let folderURL):
                 AppConstants.shared.logger.error("Failed while loading packages: Could not read contents of parent folder (\(folderURL.path()): \(loadingError)")
-                appState.showAlert(errorToShow: .couldNotGetContentsOfPackageFolder(loadingError))
+                await appState.showAlert(errorToShow: .couldNotGetContentsOfPackageFolder(loadingError))
             case .packageDoesNotHaveAnyVersionsInstalled(let packageURL):
                 AppConstants.shared.logger.error("Failed while loading packages: Package \(packageURL.packageNameFromURL()) does not have any versions installed")
-                appState.showAlert(
+                await appState.showAlert(
                     errorToShow: .installedPackageHasNoVersions(
                         corruptedPackageName: packageURL.packageNameFromURL()))
             case .packageIsNotAFolder(let offendingFile, let offendingFileURL):
                 AppConstants.shared.logger.error("Failed while loading packages: Package \(offendingFileURL.path()) is not a folder")
-                appState.showAlert(
+                await appState.showAlert(
                     errorToShow: .installedPackageIsNotAFolder(
                         itemName: offendingFile, itemURL: offendingFileURL
                     ))
             case .numberOLoadedPackagesDosNotMatchNumberOfPackageFolders:
                 AppConstants.shared.logger.error("Failed while loading packages: Number of loaded packages does not match the number of URLs in package folder")
-                appState.showAlert(errorToShow: .numberOfLoadedPackagesDoesNotMatchNumberOfPackageFolders)
+                await appState.showAlert(errorToShow: .numberOfLoadedPackagesDoesNotMatchNumberOfPackageFolders)
             case .triedToThreatFolderContainingPackagesAsPackage(let packageType):
-                appState.showAlert(errorToShow: .triedToThreatFolderContainingPackagesAsPackage(packageType: packageType))
+                await appState.showAlert(errorToShow: .triedToThreatFolderContainingPackagesAsPackage(packageType: packageType))
             case .failedWhileReadingContentsOfPackageFolder(let folderURL, let reportedError):
                 AppConstants.shared.logger.error("Failed while loading packages: Couldn't read contents of package folder \(folderURL) with this error: \(reportedError)")
             case .failedWhileTryingToDetermineIntentionalInstallation(let folderURL, let associatedIntentionalDiscoveryError):

@@ -42,7 +42,7 @@ struct GetInstalledFormulaeIntent: AppIntent
         {
             let dummyBrewData: BrewPackagesTracker = await .init()
             
-            guard let installedFormulae: BrewPackages = await dummyBrewData.loadInstalledPackages(packageTypeToLoad: .formula, appState: AppState()) else
+            guard let installedFormulae: BrewPackages = await dummyBrewData.loadInstalledPackages(packageTypeToLoad: .formula) else
             {
                 throw IntentError.failedWhilePerformingIntent
             }

@@ -10,11 +10,14 @@ import CorkNotifications
 import CorkShared
 import Foundation
 import Observation
+import Defaults
+import DefaultsMacros
+import Dependencies
 @preconcurrency import UserNotifications
 
 /// Class that holds the global state of the app, excluding services
-@Observable @MainActor
-final class AppState
+@Observable
+final class AppState: Sendable
 {
     // MARK: - Licensing
 
@@ -71,14 +74,53 @@ final class AppState
     var corruptedPackage: String = ""
 
     // MARK: - Other
-
+    @ObservableDefault(.enableExtraAnimations) @ObservationIgnored
     var enableExtraAnimations: Bool
-    {
-        return UserDefaults.standard.bool(forKey: "enableExtraAnimations")
+    
+    // MARK: - Custom Initializers
+    nonisolated init() {
+        self.licensingState = .notBoughtOrHasNotActivatedDemo
+        self.navigationTargetId = nil
+        self.notificationEnabledInSystemSettings = nil
+        self.notificationAuthStatus = .notDetermined
+        self.isSearchFieldFocused = false
+        self.brewfileImportingStage = .importing
+        self.isShowingUninstallationProgressView = false
+        self.isShowingFatalError = false
+        self.fatalAlertType = nil
+        self.isShowingConfirmationDialog = false
+        self.confirmationDialogType = nil
+        self.sheetToShow = nil
+        self.packageTryingToBeUninstalledWithSudo = nil
+        self.isShowingRemoveTapFailedAlert = false
+        self.isLoadingFormulae = true
+        self.isLoadingCasks = true
+        self.isLoadingTaps = true
+        self.isLoadingTopPackages = false
+        self.failedWhileLoadingFormulae = false
+        self.failedWhileLoadingCasks = false
+        self.failedWhileLoadingTaps = false
+        self.failedWhileLoadingTopPackages = false
+        self.corruptedPackage = ""
     }
+}
 
-    // MARK: - Showing errors
+extension AppState: DependencyKey
+{
+    static let liveValue: AppState = .init()
+}
 
+private extension UNUserNotificationCenter
+{
+    func authorizationStatus() async -> UNAuthorizationStatus
+    {
+        await notificationSettings().authorizationStatus
+    }
+}
+
+extension AppState
+{
+    // MARK: - Alert Functions
     func showAlert(errorToShow: DisplayableAlert)
     {
         fatalAlertType = errorToShow
@@ -92,9 +134,11 @@ final class AppState
 
         fatalAlertType = nil
     }
+}
 
-    // MARK: - Showing sheets
-
+extension AppState
+{
+    // MARK: - Sheet Functions
     func showSheet(ofType sheetType: DisplayableSheet)
     {
         self.sheetToShow = sheetType
@@ -104,9 +148,11 @@ final class AppState
     {
         self.sheetToShow = nil
     }
+}
 
-    // MARK: Showing confirmation dialogs
-
+extension AppState
+{
+    // MARK: - Confirmation Dialogs
     func showConfirmationDialog(ofType confirmationDialogType: ConfirmationDialog)
     {
         self.confirmationDialogType = confirmationDialogType
@@ -118,9 +164,11 @@ final class AppState
         self.isShowingConfirmationDialog = false
         self.confirmationDialogType = nil
     }
+}
 
-    // MARK: - Notification setup
-
+extension AppState
+{
+    // MARK: - Notifications
     func setupNotifications() async
     {
         let notificationCenter: UNUserNotificationCenter = AppConstants.shared.notificationCenter
@@ -170,7 +218,10 @@ final class AppState
             notificationEnabledInSystemSettings = false
         }
     }
+}
 
+extension AppState
+{
     // MARK: - Initiating the update process from legacy contexts
 
     @objc func startUpdateProcessForLegacySelectors(_: NSMenuItem!)
@@ -178,13 +229,5 @@ final class AppState
         self.showSheet(ofType: .fullUpdate)
 
         sendNotification(title: String(localized: "notification.upgrade-process-started"))
-    }
-}
-
-private extension UNUserNotificationCenter
-{
-    func authorizationStatus() async -> UNAuthorizationStatus
-    {
-        await notificationSettings().authorizationStatus
     }
 }
