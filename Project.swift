@@ -35,6 +35,7 @@ func corkTarget(configureWithSelfCompiled: Bool) -> ProjectDescription.Target {
             .external(name: "LaunchAtLogin"),
             .external(name: "DavidFoundation"),
             .external(name: "ButtonKit"),
+            .external(name: "FactoryKit"),
             .package(product: "SwiftLintBuildToolPlugin", type: .plugin),
             .external(name: "Defaults"),
             .external(name: "DefaultsMacros")
@@ -63,7 +64,8 @@ let corkSharedTarget: ProjectDescription.Target = .target(
         "Modules/Shared/**/*.swift"
     ],
     dependencies: [
-        .external(name: "Defaults")
+        .external(name: "Defaults"),
+        .external(name: "FactoryKit")
     ],
     settings: .settings(configurations: [
         .debug(

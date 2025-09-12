@@ -15,6 +15,7 @@ import Defaults
 import SwiftData
 import SwiftUI
 import UserNotifications
+import FactoryKit
 
 // swiftlint:disable type_body_length
 @main
@@ -22,6 +23,8 @@ struct CorkApp: App
 {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate: AppDelegate
 
+    @Injected(\.appConstants) private var appConstants: AppConstants
+    
     @State var brewPackagesTracker: BrewPackagesTracker = .init()
     @State var tapTracker: TapTracker = .init()
 
