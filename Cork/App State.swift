@@ -8,24 +8,24 @@
 import AppKit
 import CorkNotifications
 import CorkShared
+import FactoryKit
 import Foundation
 import Observation
 @preconcurrency import UserNotifications
-import FactoryKit
 
+/*
 extension Container
 {
     @MainActor
     var appState: Factory<AppState>
     {
-        self {
-            MainActor.assumeIsolated
-            {
-                AppState()
-            }
+        self
+        { @MainActor in
+            AppState()
         }
     }
 }
+ */
 
 /// Class that holds the global state of the app, excluding services
 @Observable @MainActor
