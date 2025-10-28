@@ -61,6 +61,11 @@ struct AdoptablePackagesSection: View
                         {
                             adoptablePackagesList
                         }
+                        
+                        DisclosureGroup("adoptable-packages.excluded.label")
+                        {
+                            excludedAdoptablePackagesList
+                        }
                     }
                 }
                 .animation(.bouncy, value: brewPackagesTracker.adoptableApps.isEmpty)
@@ -179,6 +184,20 @@ struct AdoptablePackagesSection: View
             }
         }
         .listStyle(.bordered(alternatesRowBackgrounds: true))
+    }
+    
+    @ViewBuilder
+    var excludedAdoptablePackagesList: some View
+    {
+        List
+        {
+            ForEach(excludedApps)
+            { excludedApp in
+                Text(excludedApp.appExecutable)
+            }
+        }
+        
+        Text(String(excludedApps.count))
     }
 
     @ViewBuilder
