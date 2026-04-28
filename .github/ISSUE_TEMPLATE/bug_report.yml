@@ -50,6 +50,7 @@ body:
         - "[Please select an option]"
         - Bought
         - Self-Compiled
+        - Demo
       default: 0
     validations:
       required: true
